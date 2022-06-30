@@ -1,6 +1,8 @@
-#include "IUnityGraphics.h"
-#include "IUnityInterface.h"
-#include "IUnityProfiler.h"
+#include <stddef.h>
+
+#include <IUnityGraphics.h>
+#include <IUnityInterface.h>
+#include <IUnityProfiler.h>
 
 static IUnityInterfaces* s_UnityInterfaces = nullptr;
 static IUnityGraphics* s_Graphics = nullptr;
