@@ -9,6 +9,28 @@ project(minimum
   LANGUAGES C CXX ASM
 )
 
+# Define flags to determine the build target platform
+# Windows, Linux, macOS, iOS
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  set(Windows TRUE)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  set(iOS TRUE)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(Linux TRUE)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  set(macOS TRUE)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+  set(Android TRUE)
+endif()
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -40,8 +62,29 @@ target_sources(MinimumPlugin
   MinimumPlugin.cpp
 )
 
+if(Windows)
+  set(PROJECT_BINARY_DIR
+    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/x86_64")
+elseif(macOS)
+  set(PROJECT_BINARY_DIR
+    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/macOS")
+elseif(Linux)
+  set(PROJECT_BINARY_DIR
+    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/x86_64")
+elseif(iOS)
+  set(PROJECT_BINARY_DIR
+    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/iOS")
+elseif(Android)
+  set(PROJECT_BINARY_DIR
+    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/Android")
+endif()
+
 # rename dll/framework filename
 set_target_properties(MinimumPlugin
   PROPERTIES
   OUTPUT_NAME minimum
+  RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_BINARY_DIR}
+  RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_BINARY_DIR}
+  LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_BINARY_DIR}
+  LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_BINARY_DIR}
 )
