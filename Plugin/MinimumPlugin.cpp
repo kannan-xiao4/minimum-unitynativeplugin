@@ -80,14 +80,15 @@ void ThreadFunction(const char* label, const char* makerLabel)
     }
 }
 
-void StartProfilingThread()
+void StartProfilingThread(int threadCount)
 {
     s_runnning = true;
-    auto th1 = std::make_unique<std::thread>(ThreadFunction, "Thread1", "Profile1");
-    s_threadList.emplace_back(std::move(th1));
-
-    auto th2 = std::make_unique<std::thread>(ThreadFunction, "Thread2", "Profile2");
-    s_threadList.emplace_back(std::move(th2));
+    for (size_t i = 0; i < threadCount; i++)
+    {
+        auto index = std::to_string(i);
+        auto th = std::make_unique<std::thread>(ThreadFunction, std::string("Thread").append(index).c_str(), std::string("Profile").append(index).c_str());
+        s_threadList.emplace_back(std::move(th));
+    }
 }
 
 void StopProfilingThread()
@@ -103,6 +104,6 @@ void StopProfilingThread()
 
 extern "C"
 {
-    UNITY_INTERFACE_EXPORT void StartProfiling() { StartProfilingThread(); }
+    UNITY_INTERFACE_EXPORT void StartProfiling(int threadCount) { StartProfilingThread(threadCount); }
     UNITY_INTERFACE_EXPORT void StopProfiling() { StopProfilingThread(); }
 }

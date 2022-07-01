@@ -10,13 +10,13 @@ public class Minimum : MonoBehaviour
 #endif
     
     [DllImport(Lib)]
-    public static extern void StartProfiling();
+    public static extern void StartProfiling(int threadCount);
     [DllImport(Lib)]
     public static extern void StopProfiling();
     
     private void Start()
     {
-        StartProfiling();
+        StartProfiling(5);
     }
 
     private void OnDestroy()
