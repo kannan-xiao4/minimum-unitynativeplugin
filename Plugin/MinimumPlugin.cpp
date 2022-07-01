@@ -63,12 +63,12 @@ constexpr char threadGroupName[] = "MinimumProfile";
 static std::vector<std::unique_ptr<std::thread>> s_threadList;
 bool s_runnning = false;
 
-void ThreadFunction(const char* label)
+void ThreadFunction(const char* label, const char* makerLabel)
 {
     auto profilerThread = std::make_unique<ScopedProfilerThread>(s_UnityProfiler, threadGroupName, label);
     const UnityProfilerMarkerDesc* profileMark = nullptr;
     int result = s_UnityProfiler->CreateMarker(
-        &profileMark, "Profile", kUnityProfilerCategoryScripts, kUnityProfilerMarkerFlagDefault, 0);
+        &profileMark, makerLabel, kUnityProfilerCategoryScripts, kUnityProfilerMarkerFlagDefault, 0);
     while (s_runnning)
     {
         std::unique_ptr<const ScopedProfiler> scopedProfiler;
@@ -83,14 +83,23 @@ void ThreadFunction(const char* label)
 void StartProfilingThread()
 {
     s_runnning = true;
-    auto th1 = std::make_unique<std::thread>(ThreadFunction, "Thread1");
+    auto th1 = std::make_unique<std::thread>(ThreadFunction, "Thread1", "Profile1");
     s_threadList.emplace_back(std::move(th1));
 
-    auto th2 = std::make_unique<std::thread>(ThreadFunction, "Thread2");
+    auto th2 = std::make_unique<std::thread>(ThreadFunction, "Thread2", "Profile2");
     s_threadList.emplace_back(std::move(th2));
 }
 
-void StopProfilingThread() { s_runnning = false; }
+void StopProfilingThread()
+{
+    s_runnning = false;
+    for (auto& thread : s_threadList)
+    {
+        thread->join();
+    }
+
+    s_threadList.clear();
+}
 
 extern "C"
 {
