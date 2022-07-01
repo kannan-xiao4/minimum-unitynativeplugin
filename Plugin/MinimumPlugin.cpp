@@ -4,6 +4,7 @@
 #include <mutex>
 #include <stddef.h>
 #include <thread>
+#include <pthread.h>
 #include <vector>
 #include <iostream>
 #include <string>
@@ -63,8 +64,10 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 }
 
 constexpr char threadGroupName[] = "MinimumProfile";
-static std::vector<std::unique_ptr<std::thread>> s_threadList;
-bool s_runnning = false;
+// static std::vector<std::unique_ptr<std::thread>> s_threadList;
+static std::vector<pthread_t> s_threadList;
+static bool s_runnning = false;
+static int s_threadCount = 0;
 
 void ThreadFunction(int index)
 {
@@ -88,13 +91,22 @@ void ThreadFunction(int index)
     }
 }
 
+void* threadFunc(void* p)
+{
+    ThreadFunction(s_threadCount++);
+    return 0;
+}
+
 void StartProfilingThread(int threadCount)
 {
     s_runnning = true;
     for (size_t i = 0; i < threadCount; i++)
     {
-        auto th = std::make_unique<std::thread>(ThreadFunction, i);
-        s_threadList.emplace_back(std::move(th));
+        // auto th = std::make_unique<std::thread>(ThreadFunction, i);
+        // s_threadList.emplace_back(std::move(th));
+        pthread_t handle;
+        pthread_create(&handle, 0, threadFunc, nullptr);
+        s_threadList.emplace_back(std::move(handle));
     }
 }
 
@@ -103,7 +115,8 @@ void StopProfilingThread()
     s_runnning = false;
     for (auto& thread : s_threadList)
     {
-        thread->join();
+        // thread->join();
+        pthread_join(thread, 0);
     }
 
     s_threadList.clear();
