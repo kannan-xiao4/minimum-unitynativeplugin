@@ -34,3 +34,5 @@
 # build cache
 [Bb]uild
 [Oo]ut
+
+.vscode

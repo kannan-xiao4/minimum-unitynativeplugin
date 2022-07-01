@@ -60,23 +60,25 @@ target_include_directories(MinimumPlugin
 target_sources(MinimumPlugin
   PRIVATE
   MinimumPlugin.cpp
+  ScopedProfiler.h
+  ScopedProfiler.cpp
 )
 
 if(Windows)
   set(PROJECT_BINARY_DIR
-    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/x86_64")
+    "${CMAKE_SOURCE_DIR}/../SampleProject/Assets/Plugins/x86_64")
 elseif(macOS)
   set(PROJECT_BINARY_DIR
-    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/macOS")
+    "${CMAKE_SOURCE_DIR}/../SampleProject/Assets/Plugins/macOS")
 elseif(Linux)
   set(PROJECT_BINARY_DIR
-    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/x86_64")
+    "${CMAKE_SOURCE_DIR}/../SampleProject/Assets/Plugins/x86_64")
 elseif(iOS)
   set(PROJECT_BINARY_DIR
-    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/iOS")
+    "${CMAKE_SOURCE_DIR}/../SampleProject/Assets/Plugins/iOS")
 elseif(Android)
   set(PROJECT_BINARY_DIR
-    "${CMAKE_SOURCE_DIR}/../SapmpleProject/Assets/Plugins/Android")
+    "${CMAKE_SOURCE_DIR}/../SampleProject/Assets/Plugins/Android")
 endif()
 
 # rename dll/framework filename
