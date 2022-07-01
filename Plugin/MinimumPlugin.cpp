@@ -5,6 +5,9 @@
 #include <stddef.h>
 #include <thread>
 #include <vector>
+#include <iostream>
+#include <string>
+#include <sstream>
 
 #include <IUnityGraphics.h>
 #include <IUnityInterface.h>
@@ -63,12 +66,17 @@ constexpr char threadGroupName[] = "MinimumProfile";
 static std::vector<std::unique_ptr<std::thread>> s_threadList;
 bool s_runnning = false;
 
-void ThreadFunction(const char* label, const char* makerLabel)
+void ThreadFunction(int index)
 {
-    auto profilerThread = std::make_unique<ScopedProfilerThread>(s_UnityProfiler, threadGroupName, label);
+    std::stringstream ss1;
+    ss1 << "Thread " << index;
+    std::stringstream ss2;
+    ss2 << "Profile " << index;
+
+    auto profilerThread = std::make_unique<ScopedProfilerThread>(s_UnityProfiler, threadGroupName, ss1.str().c_str());
     const UnityProfilerMarkerDesc* profileMark = nullptr;
     int result = s_UnityProfiler->CreateMarker(
-        &profileMark, makerLabel, kUnityProfilerCategoryScripts, kUnityProfilerMarkerFlagDefault, 0);
+        &profileMark, ss2.str().c_str(), kUnityProfilerCategoryScripts, kUnityProfilerMarkerFlagDefault, 0);
     while (s_runnning)
     {
         std::unique_ptr<const ScopedProfiler> scopedProfiler;
@@ -85,8 +93,7 @@ void StartProfilingThread(int threadCount)
     s_runnning = true;
     for (size_t i = 0; i < threadCount; i++)
     {
-        auto index = std::to_string(i);
-        auto th = std::make_unique<std::thread>(ThreadFunction, std::string("Thread").append(index).c_str(), std::string("Profile").append(index).c_str());
+        auto th = std::make_unique<std::thread>(ThreadFunction, i);
         s_threadList.emplace_back(std::move(th));
     }
 }
